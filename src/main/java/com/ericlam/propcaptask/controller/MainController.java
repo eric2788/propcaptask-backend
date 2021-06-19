@@ -69,7 +69,7 @@ public class MainController {
             String token = authService.register(registerRequest);
             return ResponseEntity.ok(new JwtResponse(token));
         } catch (UsernameExistException e) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Username already exist.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Username already exist.");
         }
     }
 
