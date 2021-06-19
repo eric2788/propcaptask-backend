@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Setter
@@ -18,8 +15,8 @@ import java.util.Date;
 @Entity
 public class PropUser {
 
+    @Column(columnDefinition = "varchar(20)")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String username;
 
     private String email;

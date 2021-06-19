@@ -2,12 +2,10 @@ package com.ericlam.propcaptask.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @Getter
-public class ErrorResponse {
-
-    private final String error;
-
+public class IndexResponse {
+    private final String status;
+    private final String greeting;
 }

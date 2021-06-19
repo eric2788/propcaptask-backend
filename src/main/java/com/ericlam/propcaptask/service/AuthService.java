@@ -6,9 +6,7 @@ import com.ericlam.propcaptask.model.AuthRequest;
 import com.ericlam.propcaptask.model.RegisterRequest;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.stereotype.Service;
 
-@Service
 public interface AuthService {
 
     String login(AuthRequest authRequest) throws BadCredentialsException;

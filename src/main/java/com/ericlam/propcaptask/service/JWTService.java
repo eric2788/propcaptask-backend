@@ -1,11 +1,9 @@
 package com.ericlam.propcaptask.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-@Service
 public interface JWTService {
 
     String getUsernameFromToken(String token);
@@ -14,9 +12,13 @@ public interface JWTService {
 
     boolean isTokenExpired(String token);
 
+    String generateToken(String username);
+
     String generateToken(UserDetails userDetails);
 
     boolean validateToken(String token, UserDetails userDetails);
+
+    boolean validateToken(String token, String username);
 
     void invalidateToken(String token);
 

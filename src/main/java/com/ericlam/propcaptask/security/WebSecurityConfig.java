@@ -1,5 +1,7 @@
 package com.ericlam.propcaptask.security;
 
+import com.ericlam.propcaptask.service.JWTService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -18,25 +20,30 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+@AllArgsConstructor
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JWTService jwtService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().authorizeRequests()
+        http
+                .csrf().disable()
+                .cors()
+                .and()
+                .logout().disable()
+                .formLogin().disable()
+                .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/login", "/register").permitAll()
+                .antMatchers(HttpMethod.GET, "/").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JwtAuthorizeFilter(authenticationManager))
+                .addFilter(new JwtAuthorizeFilter(authenticationManager, jwtService))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 

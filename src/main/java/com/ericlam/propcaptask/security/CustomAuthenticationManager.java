@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
@@ -14,11 +15,12 @@ import org.springframework.stereotype.Component;
 public class CustomAuthenticationManager implements AuthenticationManager {
 
     private final PropUserService propUserService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         PropUser user = propUserService.getUser(authentication.getName());
-        if (user.getPassword().equals(authentication.getCredentials().toString())) {
+        if (bCryptPasswordEncoder.matches(authentication.getCredentials().toString(), user.getPassword())) {
             return authentication;
         }
         throw new BadCredentialsException("Invalid Credentials.");
