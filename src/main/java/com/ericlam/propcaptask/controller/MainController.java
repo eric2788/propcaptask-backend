@@ -89,7 +89,6 @@ public class MainController {
 
     @PostMapping("password")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
-        if (passwordChangeRequest.getPw() == null || passwordChangeRequest.getNew_pw() == null) throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "some required fields are empty.");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         try {
             LOGGER.info("doing changepassword for: "+authentication.getName());
