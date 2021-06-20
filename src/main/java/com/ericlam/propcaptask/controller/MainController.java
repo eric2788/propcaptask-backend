@@ -58,7 +58,7 @@ public class MainController {
             String token = authService.login(authRequest);
             return ResponseEntity.ok(new JwtResponse(token));
         } catch (AuthenticationException e) {
-            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Invalid Credentials.");
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Username or password not correct.");
         }
     }
 

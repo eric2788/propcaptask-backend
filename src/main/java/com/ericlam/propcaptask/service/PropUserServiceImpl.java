@@ -50,7 +50,7 @@ public class PropUserServiceImpl implements PropUserService {
     public void updatePassword(String username, String current, String password) throws PasswordMismatchException, UsernameNotFoundException {
         PropUser user = getUser(username);
         if (!bCryptPasswordEncoder.matches(current, user.getPassword())) {
-            throw new PasswordMismatchException("Password mismatch.");
+            throw new PasswordMismatchException("Your current password is incorrect.");
         } else {
             user.setPassword(bCryptPasswordEncoder.encode(password));
             userRepository.save(user);
