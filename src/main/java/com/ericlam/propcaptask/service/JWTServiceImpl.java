@@ -1,8 +1,6 @@
 package com.ericlam.propcaptask.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,22 +34,27 @@ public class JWTServiceImpl implements JWTService {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) throws JwtException {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    private Claims getAllClaimsFromToken(String token) throws JwtException {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
     @Override
     public boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        if (expiration.before(new Date())) {
+        try {
+            final Date expiration = getExpirationDateFromToken(token);
+            if (expiration.before(new Date())) {
+                this.whiteListTokens.remove(token);
+            }
+            return !this.whiteListTokens.contains(token);
+        } catch (ExpiredJwtException e) {
             this.whiteListTokens.remove(token);
+            return true;
         }
-        return !this.whiteListTokens.contains(token);
     }
 
     @Override
@@ -61,7 +64,13 @@ public class JWTServiceImpl implements JWTService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
-        this.whiteListTokens.removeIf(t -> userDetails.getUsername().equals(getUsernameFromToken(t)));
+        this.whiteListTokens.removeIf(t -> {
+            try{
+                return userDetails.getUsername().equals(getUsernameFromToken(t));
+            }catch (ExpiredJwtException e){
+                return true;
+            }
+        });
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims, userDetails.getUsername());
     }

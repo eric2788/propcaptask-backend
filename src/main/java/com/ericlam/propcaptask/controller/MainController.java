@@ -4,6 +4,7 @@ import com.ericlam.propcaptask.exception.UsernameExistException;
 import com.ericlam.propcaptask.model.*;
 import com.ericlam.propcaptask.service.AuthService;
 import com.ericlam.propcaptask.service.PropUserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class MainController {
             LOGGER.info("doing changepassword for: "+authentication.getName());
             String token = authService.updatePassword(authentication.getName(), passwordChangeRequest.getPw(), passwordChangeRequest.getNew_pw());
             return ResponseEntity.ok(new JwtResponse(token));
-        } catch (AuthenticationException e) {
+        } catch (AuthenticationException | JwtException e) {
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }

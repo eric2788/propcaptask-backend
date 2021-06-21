@@ -1,6 +1,8 @@
 package com.ericlam.propcaptask.security;
 
 import com.ericlam.propcaptask.service.JWTService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.hibernate.annotations.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,16 +55,21 @@ public class JwtAuthorizeFilter extends BasicAuthenticationFilter {
         if (token != null) {
             token = token.replace(TOKEN_PREFIX, "");
 
-            String username = jwtService.getUsernameFromToken(token);
+            try {
+                String username = jwtService.getUsernameFromToken(token);
 
-            if (username != null) {
-                LOGGER.info("found token to username: "+username);
-                if (!jwtService.validateToken(token, username)) {
-                    LOGGER.info("the token is invalid.");
-                    return null;
+                if (username != null) {
+                    LOGGER.info("found token to username: "+username);
+                    if (!jwtService.validateToken(token, username)) {
+                        LOGGER.info("the token is invalid.");
+                        return null;
+                    }
+
+                    return new UsernamePasswordAuthenticationToken(username, token, List.of());
                 }
-
-                return new UsernamePasswordAuthenticationToken(username, token, List.of());
+            }catch (JwtException e){
+                LOGGER.info("the token is invalid: "+e.getMessage());
+                return null;
             }
 
             return null;
